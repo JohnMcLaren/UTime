@@ -1,8 +1,8 @@
 # UTime
-=======
+
 Simple clock, Coordinated Universal Time (UTC) with synchronization function by NTP protocol, and with a timer for various user needs.
 
-![screenshot](img/screenshot.png)
+![screenshot](https://raw.githubusercontent.com/JohnMcLaren/UTime/master/img/screenshot.jpg)
 
 # Key features
 

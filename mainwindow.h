@@ -1,6 +1,6 @@
 /*******************************************************
  * License GPLv3 2007
- * UTime 2019 (c) JML
+ * UTime 2019 (c) JML <johnmclaren@tuta.io>
 *******************************************************/
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H

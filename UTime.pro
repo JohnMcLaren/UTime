@@ -29,3 +29,6 @@ HEADERS  += mainwindow.h \
     qntp/NtpTimestamp.h
 
 FORMS    += mainwindow.ui
+
+DISTFILES += \
+    License.txt
