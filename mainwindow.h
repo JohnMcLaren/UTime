@@ -55,6 +55,7 @@ private:
 
 	bool bTimerOn =false;
 	qint64 qiTimerValue =0;
+	bool bForceClose =false;
 
 protected:
 	bool eventFilter(QObject *object, QEvent *event);
@@ -65,6 +66,7 @@ private slots:
 	static void beep();
 
 	void iconActivated(QSystemTrayIcon::ActivationReason reason);
+	void closeAction();
 
 signals:
 

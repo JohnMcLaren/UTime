@@ -25,8 +25,9 @@ QAction *actShow = new QAction(trUtf8("Show"), this);
 QAction *actExit = new QAction(trUtf8("Exit"), this);
 
 	connect(actShow, SIGNAL(triggered()), this, SLOT(show()));
-	connect(actExit, SIGNAL(triggered()), this, SLOT(close()));
+	connect(actExit, SIGNAL(triggered()), this, SLOT(closeAction()));
 	menu->addAction(actShow);
+	menu->addSeparator();
 	menu->addAction(actExit);
 	trayIcon->setContextMenu(menu);
 	trayIcon->show();
@@ -226,7 +227,7 @@ return(QObject::eventFilter(object, event));
 //---------------------------------------------------------------------------------------------------- tray magic
 void MainWindow::closeEvent(QCloseEvent *event)
 {
-	if(this->isVisible())
+	if(this->isVisible() && !bForceClose)
 	{
 		event->ignore();
 		this->hide();
@@ -240,4 +241,11 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 			this->hide();
 		else
 			this->show();
+}
+//............................................
+void MainWindow::closeAction()
+{
+	bForceClose =true;
+
+	close();
 }
