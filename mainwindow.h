@@ -64,7 +64,6 @@ private slots:
 
 	static void beep();
 
-	void on_cmdBeepOn_toggled(bool checked);
 	void iconActivated(QSystemTrayIcon::ActivationReason reason);
 
 signals:

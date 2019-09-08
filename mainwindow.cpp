@@ -160,8 +160,8 @@ void MainWindow::MainTimer()
 			ui->cmdTimerOn->setChecked(false);
 
 			//emit alarm();
-
-			new CThread((THREAD)beep); // beep() is blocked function, then create new thread for beep
+			if(ui->cmdBeepOn->isChecked())
+				new CThread((THREAD)beep); // beep() is blocked function, then create new thread for beep
 		}
 	}
 }
@@ -182,14 +182,6 @@ void MainWindow::on_cmdTop_toggled(bool checked)
 void MainWindow::beep()
 {
 	Beep(3100, 1000); // blocked function
-}
-//...........................
-void MainWindow::on_cmdBeepOn_toggled(bool checked)
-{
-	if(checked)
-		connect(this, SIGNAL(alarm()), SLOT(beep()), Qt::QueuedConnection);
-	else
-		disconnect(SIGNAL(alarm()), this, SLOT(beep()));
 }
 //----------------------------------------------------------------------------------------- keys magic
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
