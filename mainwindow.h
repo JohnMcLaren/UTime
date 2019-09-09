@@ -51,7 +51,7 @@ private:
     QTimer      *tmrMain;
     QTimer      *tmrSync;
 
-    qint64   qwDiffTime;
+	qint64 qwDiffTime =0;
 
 	bool bTimerOn =false;
 	qint64 qiTimerValue =0;

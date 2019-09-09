@@ -8,8 +8,7 @@
 //------------------------------------------------------------------------------------------------------------
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
-	ui(new Ui::MainWindow),
-    qwDiffTime(0)
+	ui(new Ui::MainWindow)
 {
 	ui->setupUi(this);
 
@@ -36,7 +35,7 @@ QAction *actExit = new QAction(trUtf8("Exit"), this);
 //..........................................................
 	tmrMain = new QTimer;
 	connect(tmrMain, SIGNAL(timeout()), SLOT(MainTimer()));
-	tmrMain->start(1000);
+	tmrMain->start(1000); // re-synchronization
 
 	ui->cmdBeepOn->setEnabled(true);
 	ui->cmdTimerOn->setEnabled(true);
@@ -81,7 +80,7 @@ QAction *actExit = new QAction(trUtf8("Exit"), this);
 
     tmrSync = new QTimer;
     connect(tmrSync, SIGNAL(timeout()), SLOT(SyncTimer()));
-	tmrSync->start(7777);
+	tmrSync->start(7000);
 
 	ui->cmdGetTime->setEnabled(true);
 
@@ -96,6 +95,8 @@ void MainWindow::NTPReplyReceived(const QHostAddress &address, quint16 port, con
 {
     qwDiffTime =reply.localClockOffset();
     ui->lblSync->setText("");
+
+	qDebug() << tmrMain->remainingTime();
 }
 //---------------------------------------------------------------------------------------------------------------
 void MainWindow::on_cmdGetTime_clicked()
