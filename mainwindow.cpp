@@ -32,10 +32,11 @@ QAction *actExit = new QAction(trUtf8("Exit"), this);
 	trayIcon->show();
 
 	connect(trayIcon, SIGNAL(activated(QSystemTrayIcon::ActivationReason)), this, SLOT(iconActivated(QSystemTrayIcon::ActivationReason)));
-//..........................................................
+//.......................................................... init main timer
 	tmrMain = new QTimer;
+	tmrMain->setTimerType(Qt::PreciseTimer);
 	connect(tmrMain, SIGNAL(timeout()), SLOT(MainTimer()));
-	tmrMain->start(1000); // re-synchronization
+	tmrMain->start(1000);
 
 	ui->cmdBeepOn->setEnabled(true);
 	ui->cmdTimerOn->setEnabled(true);
@@ -77,13 +78,12 @@ QAction *actExit = new QAction(trUtf8("Exit"), this);
                                                 << "time.nist.gov"
                                                 << "time.windows.com");
     ui->lstTimeServers->setCurrentRow(0);
-
+//.............................................. init sync timer
     tmrSync = new QTimer;
     connect(tmrSync, SIGNAL(timeout()), SLOT(SyncTimer()));
-	tmrSync->start(7000);
+	tmrSync->start(11111);
 
 	ui->cmdGetTime->setEnabled(true);
-
 }
 //---------------------------------------------------------------------------------------------------------------
 MainWindow::~MainWindow()
@@ -94,9 +94,27 @@ MainWindow::~MainWindow()
 void MainWindow::NTPReplyReceived(const QHostAddress &address, quint16 port, const NtpReply &reply)
 {
     qwDiffTime =reply.localClockOffset();
-    ui->lblSync->setText("");
 
-	qDebug() << tmrMain->remainingTime();
+int iRemainMSecServer =(1000 - reply.ServerTime().time().msec());
+int iRemainMSecTimer =tmrMain->remainingTime();
+
+	if(std::abs(iRemainMSecServer - iRemainMSecTimer) > 20)
+	{
+		QTimer::singleShot(iRemainMSecServer, Qt::PreciseTimer, this, SLOT(syncSec())); // seconds re-synchronization
+		tmrMain->stop();
+	}
+
+	ui->lblSync->setText("");
+
+	//qDebug("RemainMSecServer: %u RemainMSecTimer: %u", iRemainMSecServer, iRemainMSecTimer);
+}
+//............................
+void MainWindow::syncSec()
+{
+	tmrMain->start();
+	MainTimer(); // second event
+
+	//qDebug() << "-- Seconds synchronized --";
 }
 //---------------------------------------------------------------------------------------------------------------
 void MainWindow::on_cmdGetTime_clicked()
@@ -219,7 +237,6 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
 			else
 			if(KeyEvent->key() == Qt::Key_Return || KeyEvent->key() == Qt::Key_Enter)
 				ui->cmdTimerOn->setChecked(!ui->cmdTimerOn->isChecked());
-
 		}
 	}
 

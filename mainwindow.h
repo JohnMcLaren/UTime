@@ -28,28 +28,16 @@ class MainWindow : public QMainWindow
 	Q_OBJECT
 
 public:
-	explicit MainWindow(QWidget *parent = 0);
+	explicit MainWindow(QWidget *parent = nullptr);
 	~MainWindow();
-
-private slots:
-	void NTPReplyReceived(const QHostAddress &address, quint16 port, const NtpReply &reply);
-
-	void on_cmdGetTime_clicked();
-
-    void MainTimer();
-    void SyncTimer();
-
-    void on_cmdTop_toggled(bool checked);
-
-	void on_cmdTimerOn_toggled(bool checked);
 
 private:
 	Ui::MainWindow *ui;
 	QSystemTrayIcon *trayIcon;
 
 	NtpClient	*ntp;
-    QTimer      *tmrMain;
-    QTimer      *tmrSync;
+	QTimer      *tmrMain; // seconds count
+	QTimer      *tmrSync; // synchronization request to NTP server
 
 	qint64 qwDiffTime =0;
 
@@ -57,19 +45,24 @@ private:
 	qint64 qiTimerValue =0;
 	bool bForceClose =false;
 
+private slots:
+	void NTPReplyReceived(const QHostAddress &address, quint16 port, const NtpReply &reply);
+	void MainTimer();
+	void SyncTimer();
+	static void beep();
+	void iconActivated(QSystemTrayIcon::ActivationReason reason);
+	void closeAction();
+	void syncSec(); // seconds count synchronization
+
+	void on_cmdGetTime_clicked();
+    void on_cmdTop_toggled(bool checked);
+	void on_cmdTimerOn_toggled(bool checked);
+
 protected:
 	bool eventFilter(QObject *object, QEvent *event);
 	void closeEvent(QCloseEvent * event);
 
-private slots:
-
-	static void beep();
-
-	void iconActivated(QSystemTrayIcon::ActivationReason reason);
-	void closeAction();
-
 signals:
-
 	void alarm();
 };
 
