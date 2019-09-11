@@ -6,36 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>245</width>
-    <height>82</height>
+    <width>159</width>
+    <height>79</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>UTime v1.0</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QPushButton" name="cmdGetTime">
-    <property name="enabled">
-     <bool>false</bool>
-    </property>
-    <property name="geometry">
-     <rect>
-      <x>180</x>
-      <y>30</y>
-      <width>61</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>GetTime</string>
-    </property>
-   </widget>
    <widget class="QListWidget" name="lstTimeServers">
     <property name="geometry">
      <rect>
       <x>5</x>
       <y>30</y>
-      <width>121</width>
+      <width>151</width>
       <height>20</height>
      </rect>
     </property>
@@ -51,16 +35,16 @@
      <rect>
       <x>0</x>
       <y>5</y>
-      <width>221</width>
+      <width>136</width>
       <height>20</height>
      </rect>
     </property>
     <property name="font">
      <font>
       <family>Arial</family>
-      <pointsize>12</pointsize>
-      <weight>75</weight>
-      <bold>true</bold>
+      <pointsize>14</pointsize>
+      <weight>50</weight>
+      <bold>false</bold>
      </font>
     </property>
     <property name="text">
@@ -99,7 +83,7 @@
    <widget class="QPushButton" name="cmdTop">
     <property name="geometry">
      <rect>
-      <x>220</x>
+      <x>135</x>
       <y>5</y>
       <width>21</width>
       <height>21</height>
@@ -132,7 +116,7 @@
      <rect>
       <x>5</x>
       <y>55</y>
-      <width>21</width>
+      <width>15</width>
       <height>21</height>
      </rect>
     </property>
@@ -152,7 +136,7 @@
    <widget class="QLineEdit" name="txtHH">
     <property name="geometry">
      <rect>
-      <x>35</x>
+      <x>25</x>
       <y>55</y>
       <width>31</width>
       <height>20</height>
@@ -187,7 +171,7 @@
    <widget class="QLineEdit" name="txtMM">
     <property name="geometry">
      <rect>
-      <x>70</x>
+      <x>60</x>
       <y>55</y>
       <width>26</width>
       <height>20</height>
@@ -219,7 +203,7 @@
    <widget class="QLineEdit" name="txtSS">
     <property name="geometry">
      <rect>
-      <x>100</x>
+      <x>90</x>
       <y>55</y>
       <width>26</width>
       <height>20</height>
@@ -254,9 +238,9 @@
     </property>
     <property name="geometry">
      <rect>
-      <x>180</x>
+      <x>120</x>
       <y>55</y>
-      <width>61</width>
+      <width>36</width>
       <height>21</height>
      </rect>
     </property>

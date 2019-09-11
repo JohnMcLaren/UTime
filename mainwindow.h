@@ -54,7 +54,6 @@ private slots:
 	void closeAction();
 	void syncSec(); // seconds count synchronization
 
-	void on_cmdGetTime_clicked();
     void on_cmdTop_toggled(bool checked);
 	void on_cmdTimerOn_toggled(bool checked);
 

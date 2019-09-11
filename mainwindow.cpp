@@ -12,7 +12,8 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	setWindowTitle("UTime v1.0a");
+	setWindowTitle("UTime v1.1a");
+	setWindowFlags(Qt::CustomizeWindowHint|Qt::WindowTitleHint|Qt::WindowCloseButtonHint |Qt::WindowSystemMenuHint);
 	setFixedSize(size());
 //.......................................................... tray icon init magic
 	trayIcon = new QSystemTrayIcon(this);
@@ -82,8 +83,6 @@ QAction *actExit = new QAction(trUtf8("Exit"), this);
     tmrSync = new QTimer;
     connect(tmrSync, SIGNAL(timeout()), SLOT(SyncTimer()));
 	tmrSync->start(11111);
-
-	ui->cmdGetTime->setEnabled(true);
 }
 //---------------------------------------------------------------------------------------------------------------
 MainWindow::~MainWindow()
@@ -115,24 +114,6 @@ void MainWindow::syncSec()
 	MainTimer(); // second event
 
 	//qDebug() << "-- Seconds synchronized --";
-}
-//---------------------------------------------------------------------------------------------------------------
-void MainWindow::on_cmdGetTime_clicked()
-{
-QList<QHostAddress> host_addr;
-
-    if(!ui->lstTimeServers->count())
-        return;
-
-    host_addr =QHostInfo::fromName(ui->lstTimeServers->currentItem()->text()).addresses();
-
-    if(!host_addr.size())
-        return;
-
-    ui->lblSync->setText("*");
-
-    if(!ntp->sendRequest(host_addr[0], 123))
-		qDebug() << "UTime: Send error";
 }
 //------------------------------------------------------------------------------------------------------------- countdown timer magic
 
@@ -188,7 +169,20 @@ void MainWindow::MainTimer()
 //..............................
 void MainWindow::SyncTimer()
 {
-    on_cmdGetTime_clicked();
+QList<QHostAddress> host_addr;
+
+	if(!ui->lstTimeServers->count())
+		return;
+
+	host_addr =QHostInfo::fromName(ui->lstTimeServers->currentItem()->text()).addresses();
+
+	if(!host_addr.size())
+		return;
+
+	ui->lblSync->setText("*");
+
+	if(!ntp->sendRequest(host_addr[0], 123))
+		qDebug() << "UTime: Send error";
 }
 //-------------------------------------------------------------------------------------------------------------- on_top magic
 void MainWindow::on_cmdTop_toggled(bool checked)
