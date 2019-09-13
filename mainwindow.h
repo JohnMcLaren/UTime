@@ -42,7 +42,7 @@ private:
 	qint64 qwDiffTime =0;
 
 	bool bTimerOn =false;
-	qint64 qiTimerValue =0;
+	qint64 qiTimerTime =0;
 	bool bForceClose =false;
 
 private slots:

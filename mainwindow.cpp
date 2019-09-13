@@ -83,6 +83,7 @@ QAction *actExit = new QAction(trUtf8("Exit"), this);
     tmrSync = new QTimer;
     connect(tmrSync, SIGNAL(timeout()), SLOT(SyncTimer()));
 	tmrSync->start(11111);
+	SyncTimer(); // startup sync
 }
 //---------------------------------------------------------------------------------------------------------------
 MainWindow::~MainWindow()
@@ -123,26 +124,33 @@ void MainWindow::on_cmdTimerOn_toggled(bool checked)
 	{
 		bTimerOn =true;
 		ui->cmdTimerOn->setText("Stop");
-
-		qiTimerValue =(ui->txtHH->text().toInt() * 3600 + ui->txtMM->text().toInt() * 60 + ui->txtSS->text().toInt());
+		// UTC now
+		qint64 qiUTCNowSec =QDateTime::currentDateTimeUtc().addMSecs(qwDiffTime).toSecsSinceEpoch();
+		qint64 qiTimerValue =(ui->txtHH->text().toInt() * 3600 + ui->txtMM->text().toInt() * 60 + ui->txtSS->text().toInt());
 
 		if(qiTimerValue <= 0)
 			ui->cmdTimerOn->setChecked(false);
+		// UTC now secs + timer secs -> UTC time sec
+		else
+			qiTimerTime =(qiUTCNowSec + qiTimerValue);
 	}
 	else
 	{
 		bTimerOn =false;
+		qiTimerTime =0;
 		ui->cmdTimerOn->setText("Start");
 	}
 }
 //----------------------------------------------------------------
 void MainWindow::MainTimer()
 {
-    ui->lblTime->setText(QDateTime::currentDateTimeUtc().addMSecs(qwDiffTime).toString("hh:mm:ss")); // zzz - microsecond
+QDateTime UTCNow =QDateTime::currentDateTimeUtc().addMSecs(qwDiffTime);
 
-	if(bTimerOn && qiTimerValue > 0)
+	ui->lblTime->setText(UTCNow.toString("hh:mm:ss")); // .zzz - millisecond
+
+	if(bTimerOn && qiTimerTime > 0)
 	{
-		qiTimerValue--;
+	qint64 qiTimerValue =(qiTimerTime - UTCNow.toSecsSinceEpoch());
 
 		if(qiTimerValue > (3600 - 1))
 			ui->txtHH->setText(QString::number(qiTimerValue / 3600));
@@ -154,15 +162,19 @@ void MainWindow::MainTimer()
 		else
 			ui->txtMM->setText("0");
 
-		ui->txtSS->setText(QString::number(qiTimerValue % 60));
+		if(qiTimerValue > 0)
+			ui->txtSS->setText(QString::number(qiTimerValue % 60));
+		else
+			ui->txtSS->setText("0");
 
-		if(qiTimerValue == 0)
+		if(qiTimerValue <= 0)
 		{
 			ui->cmdTimerOn->setChecked(false);
 
-			//emit alarm();
 			if(ui->cmdBeepOn->isChecked())
 				new CThread((THREAD)beep); // beep() is blocked function, then create new thread for beep
+
+			//emit alarm(); // reserved
 		}
 	}
 }
