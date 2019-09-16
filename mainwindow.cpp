@@ -63,24 +63,25 @@ QAction *actExit = new QAction(trUtf8("Exit"), this);
 
 	if(!loadSettings())
 	{
-		ui->lstTimeServers->addItems(QStringList() << "0.pool.ntp.org"
-													<< "1.pool.ntp.org"
-													<< "2.pool.ntp.org"
-													<< "3.pool.ntp.org"
-													<< "ntp1.stratum1.ru"
-													<< "ntp3.stratum1.ru"
-													<< "ntp4.stratum1.ru"
-													<< "ntp5.stratum1.ru"
-													<< "ntp1.stratum2.ru"
-													<< "ntp2.stratum2.ru"
-													<< "ntp3.stratum2.ru"
-													<< "ntp4.stratum2.ru"
-													<< "ntp5.stratum2.ru"
+		Servers << "0.pool.ntp.org"
+				<< "1.pool.ntp.org"
+				<< "2.pool.ntp.org"
+				<< "3.pool.ntp.org"
+				<< "ntp1.stratum1.ru"
+				<< "ntp3.stratum1.ru"
+				<< "ntp4.stratum1.ru"
+				<< "ntp5.stratum1.ru"
+				<< "ntp1.stratum2.ru"
+				<< "ntp2.stratum2.ru"
+				<< "ntp3.stratum2.ru"
+				<< "ntp4.stratum2.ru"
+				<< "ntp5.stratum2.ru"
 
-													<< "ntp.mobatime.ru"
-													<< "time.nist.gov"
-													<< "time.windows.com");
-		ui->lstTimeServers->setCurrentRow(0);
+				<< "ntp.mobatime.ru"
+				<< "time.nist.gov"
+				<< "time.windows.com";
+
+		iCurrentServer =0;
 	}
 //.............................................. init sync timer
     tmrSync = new QTimer;
@@ -199,10 +200,10 @@ void MainWindow::SyncTimer()
 {
 QList<QHostAddress> host_addr;
 
-	if(!ui->lstTimeServers->count())
+	if(!Servers.count() || iCurrentServer <= 0)
 		return;
 
-	host_addr =QHostInfo::fromName(ui->lstTimeServers->currentItem()->text()).addresses();
+	host_addr =QHostInfo::fromName(Servers.at(iCurrentServer)).addresses();
 
 	if(!host_addr.size())
 		return;
@@ -294,18 +295,15 @@ void MainWindow::closeAction()
 //-------------------------------------------------------------------------------------- init file magic
 void MainWindow::saveSettings()
 {
-QStringList servers;
 QJsonObject settings;
 QJsonObject instance;
 QJsonArray instances =loadJsonFile(qApp->applicationDirPath() + "/settings.ini")["instances"].toArray();
 
-	for(int c =0; c < ui->lstTimeServers->count(); c++)
-		servers << ui->lstTimeServers->item(c)->text();
 // common settings ...........................
-	settings["servers"] =QJsonArray::fromStringList(servers);
+	settings["servers"] =QJsonArray::fromStringList(Servers);
 
 // instance settings .........................
-	instance["CurrentServer"] =ui->lstTimeServers->currentRow();
+	instance["CurrentServer"] =iCurrentServer;
 	instance["TopMost"] =ui->cmdTop->isChecked();
 	instance["BeepOn"] =ui->cmdBeepOn->isChecked();
 	instance["TimerOn"] =ui->cmdTimerOn->isChecked();
@@ -333,16 +331,16 @@ QJsonObject settings(loadJsonFile(qApp->applicationDirPath() + "/settings.ini"))
 	{
 		// servers list
 		foreach(const QJsonValue &value, settings["servers"].toArray())
-			ui->lstTimeServers->addItem(value.toString());
+			Servers << value.toString();
 
-		ui->lstTimeServers->setCurrentRow(0);
+		iCurrentServer =0;
 
 	QJsonArray instances =settings["instances"].toArray();
 	QJsonObject instance =instances.takeAt(0).toObject(); // delete settings of the currently running instance from instances array
 
 // restore instance settings
 		if(!instance["CurrentServer"].isUndefined())
-			ui->lstTimeServers->setCurrentRow(instance["CurrentServer"].toInt());
+			iCurrentServer =instance["CurrentServer"].toInt();
 
 		if(!instance["TopMost"].isUndefined())
 			ui->cmdTop->setChecked(instance["TopMost"].toBool());

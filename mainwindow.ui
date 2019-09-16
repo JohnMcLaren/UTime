@@ -7,29 +7,13 @@
     <x>0</x>
     <y>0</y>
     <width>159</width>
-    <height>79</height>
+    <height>55</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>UTime v1.0</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <widget class="QListWidget" name="lstTimeServers">
-    <property name="geometry">
-     <rect>
-      <x>5</x>
-      <y>30</y>
-      <width>151</width>
-      <height>20</height>
-     </rect>
-    </property>
-    <property name="verticalScrollBarPolicy">
-     <enum>Qt::ScrollBarAsNeeded</enum>
-    </property>
-    <property name="horizontalScrollBarPolicy">
-     <enum>Qt::ScrollBarAlwaysOff</enum>
-    </property>
-   </widget>
    <widget class="QLabel" name="lblTime">
     <property name="geometry">
      <rect>
@@ -115,7 +99,7 @@
     <property name="geometry">
      <rect>
       <x>5</x>
-      <y>55</y>
+      <y>30</y>
       <width>15</width>
       <height>21</height>
      </rect>
@@ -137,7 +121,7 @@
     <property name="geometry">
      <rect>
       <x>25</x>
-      <y>55</y>
+      <y>30</y>
       <width>31</width>
       <height>20</height>
      </rect>
@@ -172,7 +156,7 @@
     <property name="geometry">
      <rect>
       <x>60</x>
-      <y>55</y>
+      <y>30</y>
       <width>26</width>
       <height>20</height>
      </rect>
@@ -204,7 +188,7 @@
     <property name="geometry">
      <rect>
       <x>90</x>
-      <y>55</y>
+      <y>30</y>
       <width>26</width>
       <height>20</height>
      </rect>
@@ -239,7 +223,7 @@
     <property name="geometry">
      <rect>
       <x>120</x>
-      <y>55</y>
+      <y>30</y>
       <width>36</width>
       <height>21</height>
      </rect>

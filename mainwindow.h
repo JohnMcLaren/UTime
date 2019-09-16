@@ -41,6 +41,7 @@ private:
 	NtpClient	*ntp;
 	QTimer      *tmrMain; // seconds count
 	QTimer      *tmrSync; // synchronization request to NTP server
+	QStringList Servers;
 
 	qint64 qwDiffTime =0;
 
@@ -48,6 +49,7 @@ private:
 	qint64 qiTimerTime =0;
 	bool bForceClose =false;
 	bool bSkipSetTimer =false;
+	int iCurrentServer =(-1);
 
 	void displayTimerValue(qint64 qiTimerValue);
 	void saveSettings();
