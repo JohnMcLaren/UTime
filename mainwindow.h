@@ -18,6 +18,9 @@
 #include <QKeyEvent>
 #include <QSystemTrayIcon>
 #include <QMenu>
+#include <QJsonObject>
+#include <QJsonDocument>
+#include <QJsonArray>
 
 namespace Ui {
 class MainWindow;
@@ -44,6 +47,13 @@ private:
 	bool bTimerOn =false;
 	qint64 qiTimerTime =0;
 	bool bForceClose =false;
+	bool bSkipSetTimer =false;
+
+	void displayTimerValue(qint64 qiTimerValue);
+	void saveSettings();
+	bool loadSettings();
+	bool saveJsonFile(const QString &FileName, const QJsonDocument &JsonDoc);
+	QJsonObject loadJsonFile(const QString &FileName);
 
 private slots:
 	void NTPReplyReceived(const QHostAddress &address, quint16 port, const NtpReply &reply);

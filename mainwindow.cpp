@@ -61,24 +61,27 @@ QAction *actExit = new QAction(trUtf8("Exit"), this);
 //................................................................................................
     connect(ntp, SIGNAL(replyReceived(const QHostAddress, quint16, const NtpReply)), this, SLOT(NTPReplyReceived(const QHostAddress, quint16, const NtpReply)));
 
-	ui->lstTimeServers->addItems(QStringList() << "0.pool.ntp.org"
-												<< "1.pool.ntp.org"
-												<< "2.pool.ntp.org"
-												<< "3.pool.ntp.org"
-												<< "ntp1.stratum1.ru"
-                                                << "ntp3.stratum1.ru"
-                                                << "ntp4.stratum1.ru"
-                                                << "ntp5.stratum1.ru"
-                                                << "ntp1.stratum2.ru"
-                                                << "ntp2.stratum2.ru"
-                                                << "ntp3.stratum2.ru"
-                                                << "ntp4.stratum2.ru"
-                                                << "ntp5.stratum2.ru"
+	if(!loadSettings())
+	{
+		ui->lstTimeServers->addItems(QStringList() << "0.pool.ntp.org"
+													<< "1.pool.ntp.org"
+													<< "2.pool.ntp.org"
+													<< "3.pool.ntp.org"
+													<< "ntp1.stratum1.ru"
+													<< "ntp3.stratum1.ru"
+													<< "ntp4.stratum1.ru"
+													<< "ntp5.stratum1.ru"
+													<< "ntp1.stratum2.ru"
+													<< "ntp2.stratum2.ru"
+													<< "ntp3.stratum2.ru"
+													<< "ntp4.stratum2.ru"
+													<< "ntp5.stratum2.ru"
 
-                                                << "ntp.mobatime.ru"
-                                                << "time.nist.gov"
-                                                << "time.windows.com");
-    ui->lstTimeServers->setCurrentRow(0);
+													<< "ntp.mobatime.ru"
+													<< "time.nist.gov"
+													<< "time.windows.com");
+		ui->lstTimeServers->setCurrentRow(0);
+	}
 //.............................................. init sync timer
     tmrSync = new QTimer;
     connect(tmrSync, SIGNAL(timeout()), SLOT(SyncTimer()));
@@ -124,6 +127,14 @@ void MainWindow::on_cmdTimerOn_toggled(bool checked)
 	{
 		bTimerOn =true;
 		ui->cmdTimerOn->setText("Stop");
+
+		if(bSkipSetTimer)
+		{
+			bSkipSetTimer =false;
+
+		return;
+		}
+
 		// UTC now
 		qint64 qiUTCNowSec =QDateTime::currentDateTimeUtc().addMSecs(qwDiffTime).toSecsSinceEpoch();
 		qint64 qiTimerValue =(ui->txtHH->text().toInt() * 3600 + ui->txtMM->text().toInt() * 60 + ui->txtSS->text().toInt());
@@ -141,6 +152,24 @@ void MainWindow::on_cmdTimerOn_toggled(bool checked)
 		ui->cmdTimerOn->setText("Start");
 	}
 }
+//.....................................................
+void MainWindow::displayTimerValue(qint64 qiTimerValue)
+{
+	if(qiTimerValue > (3600 - 1))
+		ui->txtHH->setText(QString::number(qiTimerValue / 3600));
+	else
+		ui->txtHH->setText("0");
+
+	if(qiTimerValue > (60 - 1))
+		ui->txtMM->setText(QString::number(qiTimerValue / 60 % 60));
+	else
+		ui->txtMM->setText("0");
+
+	if(qiTimerValue > 0)
+		ui->txtSS->setText(QString::number(qiTimerValue % 60));
+	else
+		ui->txtSS->setText("0");
+}
 //----------------------------------------------------------------
 void MainWindow::MainTimer()
 {
@@ -152,20 +181,7 @@ QDateTime UTCNow =QDateTime::currentDateTimeUtc().addMSecs(qwDiffTime);
 	{
 	qint64 qiTimerValue =(qiTimerTime - UTCNow.toSecsSinceEpoch());
 
-		if(qiTimerValue > (3600 - 1))
-			ui->txtHH->setText(QString::number(qiTimerValue / 3600));
-		else
-			ui->txtHH->setText("0");
-
-		if(qiTimerValue > (60 - 1))
-			ui->txtMM->setText(QString::number(qiTimerValue / 60 % 60));
-		else
-			ui->txtMM->setText("0");
-
-		if(qiTimerValue > 0)
-			ui->txtSS->setText(QString::number(qiTimerValue % 60));
-		else
-			ui->txtSS->setText("0");
+		displayTimerValue(qiTimerValue);
 
 		if(qiTimerValue <= 0)
 		{
@@ -256,6 +272,8 @@ void MainWindow::closeEvent(QCloseEvent *event)
 		event->ignore();
 		this->hide();
 	}
+	else
+		saveSettings();
 }
 //.............................................
 void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
@@ -272,4 +290,113 @@ void MainWindow::closeAction()
 	bForceClose =true;
 
 	close();
+}
+//-------------------------------------------------------------------------------------- init file magic
+void MainWindow::saveSettings()
+{
+QStringList servers;
+QJsonObject settings;
+QJsonObject instance;
+QJsonArray instances =loadJsonFile(qApp->applicationDirPath() + "/settings.ini")["instances"].toArray();
+
+	for(int c =0; c < ui->lstTimeServers->count(); c++)
+		servers << ui->lstTimeServers->item(c)->text();
+// common settings ...........................
+	settings["servers"] =QJsonArray::fromStringList(servers);
+
+// instance settings .........................
+	instance["CurrentServer"] =ui->lstTimeServers->currentRow();
+	instance["TopMost"] =ui->cmdTop->isChecked();
+	instance["BeepOn"] =ui->cmdBeepOn->isChecked();
+	instance["TimerOn"] =ui->cmdTimerOn->isChecked();
+
+	qint64 qiTimerValue;
+
+	if(ui->cmdTimerOn->isChecked())
+		qiTimerValue =qiTimerTime;
+	else
+		qiTimerValue =(ui->txtHH->text().toInt() * 3600 + ui->txtMM->text().toInt() * 60 + ui->txtSS->text().toInt());
+
+	instance["TimerValue"] =qiTimerValue;
+
+	instances.append(instance);
+	settings["instances"] =instances;
+
+	saveJsonFile(qApp->applicationDirPath() + "/settings.ini", QJsonDocument(settings));
+}
+//............................................................
+bool MainWindow::loadSettings()
+{
+QJsonObject settings(loadJsonFile(qApp->applicationDirPath() + "/settings.ini"));
+
+	if(!settings.isEmpty())
+	{
+		// servers list
+		foreach(const QJsonValue &value, settings["servers"].toArray())
+			ui->lstTimeServers->addItem(value.toString());
+
+		ui->lstTimeServers->setCurrentRow(0);
+
+	QJsonArray instances =settings["instances"].toArray();
+	QJsonObject instance =instances.takeAt(0).toObject(); // delete settings of the currently running instance from instances array
+
+// restore instance settings
+		if(!instance["CurrentServer"].isUndefined())
+			ui->lstTimeServers->setCurrentRow(instance["CurrentServer"].toInt());
+
+		if(!instance["TopMost"].isUndefined())
+			ui->cmdTop->setChecked(instance["TopMost"].toBool());
+
+		if(!instance["BeepOn"].isUndefined())
+			ui->cmdBeepOn->setChecked(instance["BeepOn"].toBool());
+
+		if(!instance["TimerOn"].isUndefined() && !instance["TimerValue"].isUndefined())
+		{
+			if(instance["TimerOn"].toBool()) // user timer running
+			{
+				bSkipSetTimer =true;
+				qiTimerTime =instance["TimerValue"].toDouble();
+			}
+			else
+				displayTimerValue(instance["TimerValue"].toDouble());
+
+			ui->cmdTimerOn->setChecked(instance["TimerOn"].toBool());
+		}
+
+		settings["instances"] =instances; // new settings state
+		saveJsonFile(qApp->applicationDirPath() + "/settings.ini", QJsonDocument(settings));
+
+	return(true);
+	}
+
+return(false);
+}
+//...............................................................
+bool MainWindow::saveJsonFile(const QString &FileName, const QJsonDocument &JsonDoc)
+{
+QFile file(FileName);
+
+	if(file.open(QFile::WriteOnly))
+	{
+		file.write(JsonDoc.toJson(QJsonDocument::Indented));
+		file.close();
+
+	return(true);
+	}
+
+return(false);
+}
+//..............................................................
+QJsonObject MainWindow::loadJsonFile(const QString &FileName)
+{
+QJsonObject JsonObj;
+QFile file(FileName);
+
+	if(file.open(QFile::ReadOnly))
+	{
+		JsonObj =QJsonDocument::fromJson(file.readAll()).object();
+		file.close();
+	}
+
+return(JsonObj);
 }
