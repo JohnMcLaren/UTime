@@ -200,7 +200,7 @@ void MainWindow::SyncTimer()
 {
 QList<QHostAddress> host_addr;
 
-	if(!Servers.count() || iCurrentServer <= 0)
+	if(!Servers.count() || iCurrentServer < 0)
 		return;
 
 	host_addr =QHostInfo::fromName(Servers.at(iCurrentServer)).addresses();
@@ -398,3 +398,7 @@ QFile file(FileName);
 
 return(JsonObj);
 }
+/*******************************************************************************************************
+ * Win10 virtual store - c:\Users\...\AppData\Local\VirtualStore\Program Files (x86)\UTime\
+
+*******************************************************************************************************/
