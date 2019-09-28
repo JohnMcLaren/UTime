@@ -48,7 +48,7 @@ QAction *actExit = new QAction(trUtf8("Exit"), this);
 	ui->txtMM->installEventFilter(this);
 	ui->txtSS->installEventFilter(this);
 
-	ntp = new NtpClient(QHostAddress::Any, 123);
+	ntp = new NtpClient();
 
 	if(ntp->bErrorState || !ntp->IsPortFree())
 	{

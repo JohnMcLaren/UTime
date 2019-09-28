@@ -35,9 +35,10 @@ bool NtpClient::init(const QHostAddress &bindAddress, quint16 bindPort)
 {
 	mSocket = new QUdpSocket(this);
 
-	if(mSocket->bind(bindAddress, bindPort))// , QUdpSocket::ReuseAddressHint|QUdpSocket::ShareAddress)
+	if(mSocket->bind(bindAddress, bindPort, QUdpSocket::ReuseAddressHint|QUdpSocket::ShareAddress))
 	{
 		connect(mSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
+		bBlockBindMode =true;
 
 	return(true);
 	}
@@ -54,7 +55,6 @@ bool NtpClient::init()
 {
 	mSocket = new QUdpSocket(this);
 	connect(mSocket, SIGNAL(readyRead()), this, SLOT(readPendingDatagrams()));
-	qDebug() << "NtpClient init";
 
 return(true);
 }
@@ -79,6 +79,9 @@ return(false);
 //-----------------------------------------------------------------------------------------
 bool NtpClient::sendRequest(const QHostAddress &address, quint16 port)
 {
+	if(!bBlockBindMode)
+		mSocket->bind(QHostAddress::Any, port);
+
 	if(!bErrorState && mSocket->state() != QAbstractSocket::BoundState)
 	{
 		qDebug() << "NtpClient: Socket error - not bound state";
@@ -132,6 +135,9 @@ void NtpClient::readPendingDatagrams()
 		/* Notify. */
 		Q_EMIT replyReceived(address, port, reply);
 	}
+
+	if(!bBlockBindMode)
+		mSocket->close();
 }
 //-------------------------------------------------------------------------------------------
 /******************

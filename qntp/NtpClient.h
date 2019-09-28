@@ -53,6 +53,7 @@ public:
 
 	bool IsPortFree(quint16 port =123);
 	bool bErrorState =false;
+	bool bBlockBindMode =false;
 
 private Q_SLOTS:
 
