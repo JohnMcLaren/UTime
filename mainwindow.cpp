@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 
 	setWindowTitle("UTime v1.1a");
-	setWindowFlags(Qt::CustomizeWindowHint|Qt::WindowTitleHint|Qt::WindowCloseButtonHint |Qt::WindowSystemMenuHint);
+	setWindowFlags(Qt::CustomizeWindowHint|Qt::WindowTitleHint|Qt::WindowCloseButtonHint|Qt::WindowSystemMenuHint);
 	setFixedSize(size());
 //.......................................................... tray icon init magic
 	trayIcon = new QSystemTrayIcon(this);
