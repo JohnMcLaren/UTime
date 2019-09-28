@@ -21,10 +21,12 @@
 #include <QSharedData>
 #include "NtpPacket.h"
 
-class NtpReplyPrivate: public QSharedData {
+class NtpReplyPrivate : public QSharedData
+{
 public:
-  NtpFullPacket packet;
-  QDateTime destinationTime;
+
+	NtpFullPacket packet;
+	QDateTime destinationTime;
 };
 
 #endif // QNTP_REPLY_P_H

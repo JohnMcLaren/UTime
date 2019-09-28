@@ -50,7 +50,7 @@ QAction *actExit = new QAction(trUtf8("Exit"), this);
 
 	ntp = new NtpClient(QHostAddress::Any, 123);
 
-	if(ntp->bErrorState || !ntp->IsNtpPortFree())
+	if(ntp->bErrorState || !ntp->IsPortFree())
 	{
 		QMessageBox::warning(this, "Error", "Ntp port [123] busy by system or another program.");
 		ui->lblSync->setText("*");

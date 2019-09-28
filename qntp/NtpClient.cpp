@@ -20,10 +20,10 @@
 #include "NtpPacket.h"
 #include "NtpReply.h"
 #include "NtpReply_p.h"
-
+//----------------------------------------------------------------------------------
 NtpClient::NtpClient(QObject *parent): QObject(parent)
 {
-  init();
+	init();
 }
 
 NtpClient::NtpClient(const QHostAddress &bindAddress, quint16 bindPort, QObject *parent): QObject(parent)
@@ -61,14 +61,14 @@ return(true);
 
 NtpClient::~NtpClient()
 {
-  return;
+	return;
 }
 //------------------------------------------------------------------------
-bool NtpClient::IsNtpPortFree()
+bool NtpClient::IsPortFree(quint16 port)
 {
 QUdpSocket udp;
 
-	if(udp.bind(QHostAddress::LocalHost, 123))
+	if(udp.bind(QHostAddress::LocalHost, port))
 	{
 
 	return(true);
@@ -81,51 +81,57 @@ bool NtpClient::sendRequest(const QHostAddress &address, quint16 port)
 {
 	if(!bErrorState && mSocket->state() != QAbstractSocket::BoundState)
 	{
-		qDebug() << "UTime: Socket error - not bound state";
+		qDebug() << "NtpClient: Socket error - not bound state";
+
 	return false;
 	}
 
   /* Initialize the NTP packet. */
-  NtpPacket packet;
-  memset(&packet, 0, sizeof(packet));
-  packet.flags.mode = ClientMode;
-  packet.flags.versionNumber = 4;
-  packet.transmitTimestamp = NtpTimestamp::fromDateTime(QDateTime::currentDateTimeUtc());
+NtpPacket packet;
 
-  /* Send it. */
-  if(mSocket->writeDatagram(reinterpret_cast<const char *>(&packet), sizeof(packet), address, port) < 0)
-  {
-	  qDebug() << "UTime: " << mSocket->errorString();
-    return false;
-  }
+	memset(&packet, 0, sizeof(packet));
+	packet.flags.mode =ClientMode;
+	packet.flags.versionNumber =4;
+	packet.transmitTimestamp =NtpTimestamp::fromDateTime(QDateTime::currentDateTimeUtc());
+
+	/* Send it. */
+	if(mSocket->writeDatagram(reinterpret_cast<const char *>(&packet), sizeof(packet), address, port) < 0)
+	{
+		qDebug() << "NtpClient: " << mSocket->errorString();
+
+	return false;
+	}
 
 return true;
 }
 //-----------------------------------------------------------------------------------------
 void NtpClient::readPendingDatagrams()
 {
-  while (mSocket->hasPendingDatagrams())
-  {
-    NtpFullPacket packet;
-	memset(&packet, 0, sizeof(packet));
+	while (mSocket->hasPendingDatagrams())
+	{
+	NtpFullPacket packet;
 
-    QHostAddress address;
-    quint16 port;
+		memset(&packet, 0, sizeof(packet));
 
-    if(mSocket->readDatagram(reinterpret_cast<char *>(&packet), sizeof(packet), &address, &port) < sizeof(NtpPacket))
-      continue;
+	QHostAddress address;
+	quint16 port;
 
-    QDateTime now = QDateTime::currentDateTime();
+		if(mSocket->readDatagram(reinterpret_cast<char *>(&packet), sizeof(packet), &address, &port) < sizeof(NtpPacket))
+			continue;
 
-    /* Prepare reply. */
-    NtpReplyPrivate *replyPrivate = new NtpReplyPrivate();
-    replyPrivate->packet = packet;
-    replyPrivate->destinationTime = now;
-    NtpReply reply(replyPrivate);
+	QDateTime now =QDateTime::currentDateTime();
 
-    /* Notify. */
-    Q_EMIT replyReceived(address, port, reply);
-  }  
+		/* Prepare reply. */
+	NtpReplyPrivate *replyPrivate = new NtpReplyPrivate();
+
+		replyPrivate->packet =packet;
+		replyPrivate->destinationTime =now;
+
+	NtpReply reply(replyPrivate);
+
+		/* Notify. */
+		Q_EMIT replyReceived(address, port, reply);
+	}
 }
 //-------------------------------------------------------------------------------------------
 /******************
