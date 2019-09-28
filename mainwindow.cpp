@@ -320,6 +320,9 @@ QJsonArray instances =loadJsonFile(qApp->applicationDirPath() + "/settings.ini")
 	instances.append(instance);
 	settings["instances"] =instances;
 
+	if(!iCurrentServer && !qiTimerValue) // don't save default settings
+		return;
+
 	saveJsonFile(qApp->applicationDirPath() + "/settings.ini", QJsonDocument(settings));
 }
 //............................................................
