@@ -30,5 +30,12 @@ HEADERS  += mainwindow.h \
 
 FORMS    += mainwindow.ui
 
+# Icon made by Freepik from www.flaticon.com
+RC_ICONS ="img/icon.ico"
+
+RESOURCES += \
+    resources.qrc
+
 DISTFILES += \
     License.txt
+

@@ -12,12 +12,13 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	setWindowTitle("UTime v1.1a");
+	setWindowTitle("UTime v1.2");
 	setWindowFlags(Qt::CustomizeWindowHint|Qt::WindowTitleHint|Qt::WindowCloseButtonHint|Qt::WindowSystemMenuHint);
 	setFixedSize(size());
 //.......................................................... tray icon init magic
 	trayIcon = new QSystemTrayIcon(this);
-	trayIcon->setIcon(this->style()->standardIcon(QStyle::SP_ComputerIcon));
+	//trayIcon->setIcon(this->style()->standardIcon(QStyle::SP_ComputerIcon));
+	trayIcon->setIcon(QIcon(":/img/icon-tray.png"));
 	trayIcon->setToolTip(this->windowTitle());
 
 QMenu *menu = new QMenu(this);
