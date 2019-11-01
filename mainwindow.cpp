@@ -343,16 +343,16 @@ QJsonObject settings(loadJsonFile(qApp->applicationDirPath() + "/settings.ini"))
 	QJsonObject instance =instances.takeAt(0).toObject(); // delete settings of the currently running instance from instances array
 
 // restore instance settings
-		if(!instance["CurrentServer"].isUndefined())
+		if(!instance["CurrentServer"].isNull())
 			iCurrentServer =instance["CurrentServer"].toInt();
 
-		if(!instance["TopMost"].isUndefined())
+		if(!instance["TopMost"].isNull())
 			ui->cmdTop->setChecked(instance["TopMost"].toBool());
 
-		if(!instance["BeepOn"].isUndefined())
+		if(!instance["BeepOn"].isNull())
 			ui->cmdBeepOn->setChecked(instance["BeepOn"].toBool());
 
-		if(!instance["TimerOn"].isUndefined() && !instance["TimerValue"].isUndefined())
+		if(!instance["TimerOn"].isNull() && !instance["TimerValue"].isNull())
 		{
 			if(instance["TimerOn"].toBool()) // user timer running
 			{
