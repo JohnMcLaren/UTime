@@ -193,7 +193,7 @@ QDateTime UTCNow =QDateTime::currentDateTimeUtc().addMSecs(qwDiffTime);
 			ui->cmdTimerOn->setChecked(false);
 
 			if(ui->cmdBeepOn->isChecked())
-				beep();
+				beep(1000, 1000);
 
 			//emit alarm(); // reserved
 		}
@@ -225,34 +225,23 @@ void MainWindow::on_cmdTop_toggled(bool checked)
     else
         SetWindowPos((HWND)winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
-//----------------------------------------------------- beep magic
+//------------------------------------------------------------------------------------------------- beep magic
 #include <QtMath>
 #include <QBuffer>
 #include <QAudioOutput>
-#define SAMPLE_RATE 48000
-#define FREQ_CONST ((1.0 * M_PI) / SAMPLE_RATE) // check **(2.0 * M_PI) freq
-#define TG_MAX_VAL 0xFFFF
+#define SAMPLE_RATE 44100 // enough
 
-void MainWindow::beep()
+// Frequency - Hz, Duration - mS, Volume - 0 to 1.0
+void MainWindow::beep(const int iFreq, const int iDuration, const qreal fVolume)
 {
-//	Beep(3100, 1000); // blocked function
-int seconds =1;
-int freq =600;
+double w =(2.0 * M_PI * iFreq); // Angular frequency
+QVector<qint16> buff((iDuration / 1000.0) * SAMPLE_RATE);
 
-QVector<quint16> buff(seconds * SAMPLE_RATE);
-//QByteArray *buff = new QByteArray();
+	// data array
+	for(int i=0; i < buff.size(); i++)
+		buff[i] =(qint16)(0x7FFF * qSin(w * i / SAMPLE_RATE)); // float to 0...0xFFFF (UnSigned) diapazone or -32767 to +32767 (Signed)
 
-	for(int i=0; i < (seconds * SAMPLE_RATE); i++)
-	{
-	qreal t =(qreal)(freq * i);
-
-		t =(t * FREQ_CONST);
-		t =qSin(t);
-		// now we normalize t
-		t *=TG_MAX_VAL; // float to 0...0xFFFF diapazone
-		buff[i] =(quint16)t;
-	}
-	// Make a QBuffer from our QByteArray
+	// Make a QBuffer from our data array
 QBuffer *input = new QBuffer();
 
 	input->setData((char *)buff.data(), buff.size() * 2); // 16-bit =2 bytes
@@ -265,15 +254,15 @@ QAudioFormat format;
 	format.setSampleSize(16); // 8
 	format.setCodec("audio/pcm");
 	format.setByteOrder(QAudioFormat::LittleEndian);
-	format.setSampleType(QAudioFormat::UnSignedInt);
+	format.setSampleType(QAudioFormat::SignedInt);
 
 	// Create an output with our premade QAudioFormat (See example in QAudioOutput)
 QAudioOutput *audio = new QAudioOutput(format);
 
-	//audio->setVolume(0.5); // not work
+	audio->setVolume(fVolume); // work on SignedInt sample only
 	audio->start(input);
 
-	// воспроизведение начинается при выходе из функции!
+	// playback starts on exit the function!
 }
 //----------------------------------------------------------------------------------------- keys magic
 bool MainWindow::eventFilter(QObject *object, QEvent *event)

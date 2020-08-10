@@ -63,7 +63,7 @@ private slots:
 	void NTPReplyReceived(const QHostAddress &address, quint16 port, const NtpReply &reply);
 	void MainTimer();
 	void SyncTimer();
-	static void beep();
+	static void beep(const int iFreq, const int iDuration, const qreal fVolume =1.0);
 	void iconActivated(QSystemTrayIcon::ActivationReason reason);
 	void closeAction();
 	void syncSec(); // seconds count synchronization
