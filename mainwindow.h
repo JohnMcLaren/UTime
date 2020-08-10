@@ -21,6 +21,7 @@
 #include <QJsonObject>
 #include <QJsonDocument>
 #include <QJsonArray>
+#include <QDir>
 
 namespace Ui {
 class MainWindow;
@@ -37,6 +38,7 @@ public:
 private:
 	Ui::MainWindow *ui;
 	QSystemTrayIcon *trayIcon;
+	const QString WorkFolder =QDir::homePath() + "/Documents/UTime";
 
 	NtpClient	*ntp;
 	QTimer      *tmrMain; // seconds count

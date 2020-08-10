@@ -61,6 +61,9 @@ QAction *actExit = new QAction(trUtf8("Exit"), this);
 	}
 //................................................................................................
     connect(ntp, SIGNAL(replyReceived(const QHostAddress, quint16, const NtpReply)), this, SLOT(NTPReplyReceived(const QHostAddress, quint16, const NtpReply)));
+//................................ Settings
+	if(!QDir(WorkFolder).exists())
+		QDir().mkdir(WorkFolder);
 
 	if(!loadSettings())
 	{
@@ -190,7 +193,7 @@ QDateTime UTCNow =QDateTime::currentDateTimeUtc().addMSecs(qwDiffTime);
 			ui->cmdTimerOn->setChecked(false);
 
 			if(ui->cmdBeepOn->isChecked())
-				new CThread((THREAD)beep); // beep() is blocked function, then create new thread for beep
+				beep();
 
 			//emit alarm(); // reserved
 		}
@@ -223,9 +226,54 @@ void MainWindow::on_cmdTop_toggled(bool checked)
         SetWindowPos((HWND)winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
 }
 //----------------------------------------------------- beep magic
+#include <QtMath>
+#include <QBuffer>
+#include <QAudioOutput>
+#define SAMPLE_RATE 48000
+#define FREQ_CONST ((1.0 * M_PI) / SAMPLE_RATE) // check **(2.0 * M_PI) freq
+#define TG_MAX_VAL 0xFFFF
+
 void MainWindow::beep()
 {
-	Beep(3100, 1000); // blocked function
+//	Beep(3100, 1000); // blocked function
+int seconds =1;
+int freq =600;
+
+QVector<quint16> buff(seconds * SAMPLE_RATE);
+//QByteArray *buff = new QByteArray();
+
+	for(int i=0; i < (seconds * SAMPLE_RATE); i++)
+	{
+	qreal t =(qreal)(freq * i);
+
+		t =(t * FREQ_CONST);
+		t =qSin(t);
+		// now we normalize t
+		t *=TG_MAX_VAL; // float to 0...0xFFFF diapazone
+		buff[i] =(quint16)t;
+	}
+	// Make a QBuffer from our QByteArray
+QBuffer *input = new QBuffer();
+
+	input->setData((char *)buff.data(), buff.size() * 2); // 16-bit =2 bytes
+	input->open(QIODevice::ReadOnly);
+
+QAudioFormat format;
+	// Set up the format, eg.
+	format.setSampleRate(SAMPLE_RATE);
+	format.setChannelCount(1);
+	format.setSampleSize(16); // 8
+	format.setCodec("audio/pcm");
+	format.setByteOrder(QAudioFormat::LittleEndian);
+	format.setSampleType(QAudioFormat::UnSignedInt);
+
+	// Create an output with our premade QAudioFormat (See example in QAudioOutput)
+QAudioOutput *audio = new QAudioOutput(format);
+
+	//audio->setVolume(0.5); // not work
+	audio->start(input);
+
+	// воспроизведение начинается при выходе из функции!
 }
 //----------------------------------------------------------------------------------------- keys magic
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
@@ -298,7 +346,7 @@ void MainWindow::saveSettings()
 {
 QJsonObject settings;
 QJsonObject instance;
-QJsonArray instances =loadJsonFile(qApp->applicationDirPath() + "/settings.ini")["instances"].toArray();
+QJsonArray instances =loadJsonFile(WorkFolder + "/settings.ini")["instances"].toArray();
 
 // common settings ...........................
 	settings["servers"] =QJsonArray::fromStringList(Servers);
@@ -324,12 +372,15 @@ QJsonArray instances =loadJsonFile(qApp->applicationDirPath() + "/settings.ini")
 	if(!iCurrentServer && !qiTimerValue) // don't save default settings
 		return;
 
-	saveJsonFile(qApp->applicationDirPath() + "/settings.ini", QJsonDocument(settings));
+	saveJsonFile(WorkFolder + "/settings.ini", QJsonDocument(settings));
 }
 //............................................................
 bool MainWindow::loadSettings()
 {
-QJsonObject settings(loadJsonFile(qApp->applicationDirPath() + "/settings.ini"));
+	if(!QDir(WorkFolder).exists())
+		return(false);
+
+QJsonObject settings(loadJsonFile(WorkFolder + "/settings.ini"));
 
 	if(!settings.isEmpty())
 	{
@@ -366,7 +417,7 @@ QJsonObject settings(loadJsonFile(qApp->applicationDirPath() + "/settings.ini"))
 		}
 
 		settings["instances"] =instances; // new settings state
-		saveJsonFile(qApp->applicationDirPath() + "/settings.ini", QJsonDocument(settings));
+		saveJsonFile(WorkFolder + "/settings.ini", QJsonDocument(settings));
 
 	return(true);
 	}
