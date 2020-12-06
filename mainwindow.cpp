@@ -267,7 +267,7 @@ QAudioOutput *audio = new QAudioOutput(format);
 //----------------------------------------------------------------------------------------- keys magic
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
 {
-	if (object == ui->txtHH || object == ui->txtMM || object == ui->txtSS)
+	if(object == ui->txtHH || object == ui->txtMM || object == ui->txtSS)
 	{
 		if(event->type() == QEvent::FocusIn || event->type() == QEvent::MouseButtonPress)
 		{
