@@ -13,13 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-    cthread.cpp \
         mainwindow.cpp \
     qntp/NtpReply.cpp \
     qntp/NtpClient.cpp
 
 HEADERS  += mainwindow.h \
-    cthread.h \
     qntp/QNtp.h \
     qntp/config.h \
     qntp/NtpClient.h \

@@ -4,7 +4,6 @@
 *******************************************************/
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "cthread.h"
 //------------------------------------------------------------------------------------------------------------
 MainWindow::MainWindow(QWidget *parent) :
 	QMainWindow(parent),
