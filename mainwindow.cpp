@@ -327,7 +327,6 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 void MainWindow::closeAction()
 {
 	bForceClose =true;
-
 	close();
 }
 //-------------------------------------------------------------------------------------- init file magic
