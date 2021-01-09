@@ -22,14 +22,10 @@ MainWindow::MainWindow(QWidget *parent) :
 	trayIcon->setToolTip(this->windowTitle());
 
 QMenu *menu = new QMenu(this);
-QAction *actShow = new QAction(trUtf8("Show"), this);
-QAction *actExit = new QAction(trUtf8("Exit"), this);
 
-	connect(actShow, SIGNAL(triggered()), this, SLOT(show()));
-	connect(actExit, SIGNAL(triggered()), this, SLOT(closeAction()));
-	menu->addAction(actShow);
+	menu->addAction("Show", this, SLOT(show()));
 	menu->addSeparator();
-	menu->addAction(actExit);
+	menu->addAction("Exit", this, SLOT(closeAction()));
 	trayIcon->setContextMenu(menu);
 	trayIcon->show();
 
