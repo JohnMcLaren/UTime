@@ -22,8 +22,11 @@ MainWindow::MainWindow(QWidget *parent) :
 	trayIcon->setToolTip(this->windowTitle());
 
 QMenu *menu = new QMenu(this);
+QMenu *submenu = new QMenu("Servers", this);
 
 	menu->addAction("Show", this, SLOT(show()));
+	menu->addSeparator();
+	menu->addMenu(submenu); // Servers list
 	menu->addSeparator();
 	menu->addAction("Exit", this, SLOT(closeAction()));
 	trayIcon->setContextMenu(menu);
@@ -83,6 +86,26 @@ QMenu *menu = new QMenu(this);
 
 		iCurrentServer =0;
 	}
+
+	// Add Servers to menu
+QActionGroup *group = new QActionGroup(this); // only one server can be selected
+
+	for(int c =0; c < Servers.size(); c++)
+	{
+	QAction *action = new QAction(Servers.at(c));
+
+		group->addAction(action);
+		action->setCheckable(true);
+
+		if(c == iCurrentServer)
+			action->setChecked(true);
+
+		connect(action, &QAction::triggered, [this, c]() { // menu index action handler
+			iCurrentServer =c;
+		});
+	}
+
+	submenu->addActions(group->actions());
 //.............................................. init sync timer
     tmrSync = new QTimer;
     connect(tmrSync, SIGNAL(timeout()), SLOT(SyncTimer()));
@@ -200,7 +223,7 @@ void MainWindow::SyncTimer()
 {
 QList<QHostAddress> host_addr;
 
-	if(!Servers.count() || iCurrentServer < 0)
+	if(iCurrentServer >= Servers.size())
 		return;
 
 	host_addr =QHostInfo::fromName(Servers.at(iCurrentServer)).addresses();
@@ -403,7 +426,8 @@ QJsonObject settings(loadJsonFile(WorkFolder + "/settings.ini"));
 		settings["instances"] =instances; // new settings state
 		saveJsonFile(WorkFolder + "/settings.ini", QJsonDocument(settings));
 
-	return(true);
+		if(iCurrentServer < Servers.size())
+			return(true);
 	}
 
 return(false);
