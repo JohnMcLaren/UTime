@@ -13,7 +13,7 @@ MainWindow::MainWindow(QWidget *parent) :
 	ui->setupUi(this);
 
 	setWindowTitle("UTime v1.2");
-	setWindowFlags(Qt::CustomizeWindowHint|Qt::WindowTitleHint|Qt::WindowCloseButtonHint|Qt::WindowSystemMenuHint);
+	setWindowFlags(Qt::CustomizeWindowHint|Qt::WindowTitleHint|Qt::WindowCloseButtonHint|Qt::WindowSystemMenuHint|Qt::Dialog|Qt::MSWindowsFixedSizeDialogHint);
 	setFixedSize(size());
 //.......................................................... tray icon init magic
 	trayIcon = new QSystemTrayIcon(this);
@@ -236,7 +236,7 @@ QList<QHostAddress> host_addr;
 	if(!ntp->sendRequest(host_addr[0], 123))
 		qDebug() << "UTime: Send error";
 }
-//-------------------------------------------------------------------------------------------------------------- on_top magic
+//-------------------------------------------------------------------------------------------------- on_top magic
 void MainWindow::on_cmdTop_toggled(bool checked)
 {
     if(checked)
