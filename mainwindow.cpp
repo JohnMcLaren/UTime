@@ -240,9 +240,11 @@ QList<QHostAddress> host_addr;
 void MainWindow::on_cmdTop_toggled(bool checked)
 {
     if(checked)
-        SetWindowPos((HWND)winId(), HWND_TOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		setWindowFlags(windowFlags() | Qt::WindowStaysOnTopHint);
     else
-        SetWindowPos((HWND)winId(), HWND_NOTOPMOST, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE);
+		setWindowFlags(windowFlags() ^ Qt::WindowStaysOnTopHint);
+
+	show();
 }
 //------------------------------------------------------------------------------------------------- beep magic
 #include <QtMath>
