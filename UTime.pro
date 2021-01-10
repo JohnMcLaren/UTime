@@ -13,11 +13,13 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
+    beep.cpp \
         mainwindow.cpp \
     qntp/NtpReply.cpp \
     qntp/NtpClient.cpp
 
 HEADERS  += mainwindow.h \
+    beep.h \
     qntp/QNtp.h \
     qntp/config.h \
     qntp/NtpClient.h \

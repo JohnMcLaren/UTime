@@ -139,8 +139,6 @@ void MainWindow::syncSec()
 {
 	tmrMain->start();
 	MainTimer(); // second event
-
-	//qDebug() << "-- Seconds synchronized --";
 }
 //------------------------------------------------------------------------------------------------------------- countdown timer magic
 
@@ -211,9 +209,10 @@ QDateTime UTCNow =QDateTime::currentDateTimeUtc().addMSecs(qwDiffTime);
 			ui->cmdTimerOn->setChecked(false);
 
 			if(ui->cmdBeepOn->isChecked())
-				beep(1000, 1000);
-
-			//emit alarm(); // reserved
+			{
+				//emit alarm(); // reserved
+				beep.play();
+			}
 		}
 	}
 }
@@ -244,45 +243,6 @@ void MainWindow::on_cmdTop_toggled(bool checked)
 		setWindowFlags(windowFlags() ^ Qt::WindowStaysOnTopHint);
 
 	show();
-}
-//------------------------------------------------------------------------------------------------- beep magic
-#include <QtMath>
-#include <QBuffer>
-#include <QAudioOutput>
-#define SAMPLE_RATE 44100 // enough
-
-// Frequency - Hz, Duration - mS, Volume - 0 to 1.0
-void MainWindow::beep(const int iFreq, const int iDuration, const qreal fVolume)
-{
-double w =(2.0 * M_PI * iFreq); // Angular frequency
-QVector<qint16> buff((iDuration / 1000.0) * SAMPLE_RATE);
-
-	// data array
-	for(int i=0; i < buff.size(); i++)
-		buff[i] =(qint16)(0x7FFF * qSin(w * i / SAMPLE_RATE)); // float to 0...0xFFFF (UnSigned) diapazone or -32767 to +32767 (Signed)
-
-	// Make a QBuffer from our data array
-QBuffer *input = new QBuffer();
-
-	input->setData((char *)buff.data(), buff.size() * 2); // 16-bit =2 bytes
-	input->open(QIODevice::ReadOnly);
-
-QAudioFormat format;
-	// Set up the format, eg.
-	format.setSampleRate(SAMPLE_RATE);
-	format.setChannelCount(1);
-	format.setSampleSize(16); // 8
-	format.setCodec("audio/pcm");
-	format.setByteOrder(QAudioFormat::LittleEndian);
-	format.setSampleType(QAudioFormat::SignedInt);
-
-	// Create an output with our premade QAudioFormat (See example in QAudioOutput)
-QAudioOutput *audio = new QAudioOutput(format);
-
-	audio->setVolume(fVolume); // work on SignedInt sample only
-	audio->start(input);
-
-	// playback starts on exit the function!
 }
 //----------------------------------------------------------------------------------------- keys magic
 bool MainWindow::eventFilter(QObject *object, QEvent *event)
