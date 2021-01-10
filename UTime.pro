@@ -9,8 +9,10 @@ QT       += core gui network multimedia
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = UTime
+VERSION = 1.3
 TEMPLATE = app
-
+DEFINES += APP_NAME=\\\"$$TARGET\\\"
+DEFINES += APP_VERSION=\\\"$$VERSION\\\"
 
 SOURCES += main.cpp\
     beep.cpp \

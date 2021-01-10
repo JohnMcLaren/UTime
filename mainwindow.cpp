@@ -11,7 +11,7 @@ MainWindow::MainWindow(QWidget *parent) :
 {
 	ui->setupUi(this);
 
-	setWindowTitle("UTime v1.2");
+	setWindowTitle(QString(APP_NAME) + " v" + APP_VERSION);
 	setWindowFlags(Qt::CustomizeWindowHint|Qt::WindowTitleHint|Qt::WindowCloseButtonHint|Qt::WindowSystemMenuHint|Qt::Dialog|Qt::MSWindowsFixedSizeDialogHint);
 	setFixedSize(size());
 //.......................................................... tray icon init magic
