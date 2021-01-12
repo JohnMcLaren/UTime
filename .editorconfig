@@ -1,4 +1,4 @@
-# Test for correct sources indentation on GitHub
+# For correct sources indentation on GitHub [worked]
 [*.{c,cpp,h}]
 indent_style = tab
 indent_size = 4
