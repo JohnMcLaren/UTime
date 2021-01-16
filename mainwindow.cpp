@@ -324,8 +324,9 @@ QJsonArray instances =loadJsonFile(WorkFolder + "/settings.ini")["instances"].to
 	instance["TopMost"] =ui->cmdTop->isChecked();
 	instance["BeepOn"] =ui->cmdBeepOn->isChecked();
 	instance["TimerOn"] =ui->cmdTimerOn->isChecked();
+	instance["Position"] =QJsonObject{{"x", window()->x()}, {"y", window()->y()}};
 
-	qint64 qiTimerValue;
+qint64 qiTimerValue;
 
 	if(ui->cmdTimerOn->isChecked())
 		qiTimerValue =qiTimerTime;
@@ -384,7 +385,21 @@ QJsonObject settings(loadJsonFile(WorkFolder + "/settings.ini"));
 			ui->cmdTimerOn->setChecked(instance["TimerOn"].toBool());
 		}
 
-		settings["instances"] =instances; // new settings state
+		if(!instance["Position"].isNull())
+		{
+		QJsonObject pos =instance["Position"].toObject();
+		int x =pos["x"].toInt(), y =pos["y"].toInt();
+		QScreen *screen =QGuiApplication::primaryScreen();
+
+			qDebug("screen[%d, %d]", screen->geometry().width(), screen->geometry().height());
+			qDebug("app settings[%d, %d]", x, y);
+
+			if(x > 0 && x < screen->geometry().width() && y > 0 && y < screen->geometry().height())
+				move(x, y); // move window to last saved position
+		}
+
+// new settings state
+		settings["instances"] =instances;
 		saveJsonFile(WorkFolder + "/settings.ini", QJsonDocument(settings));
 
 		if(iCurrentServer < Servers.size())
