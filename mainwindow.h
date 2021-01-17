@@ -42,9 +42,9 @@ private:
 	QSystemTrayIcon *trayIcon;
 	const QString WorkFolder =QDir::homePath() + "/Documents/UTime";
 
-	NtpClient	*ntp;
-	QTimer      *tmrMain; // seconds count
-	QTimer      *tmrSync; // synchronization request to NTP server
+	NtpClient	*ntp =nullptr;
+	QTimer      *tmrMain =nullptr; // seconds count
+	QTimer      *tmrSync =nullptr; // synchronization request to NTP server
 	QStringList Servers;
 
 	qint64 qwDiffTime =0;

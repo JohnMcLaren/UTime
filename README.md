@@ -15,7 +15,7 @@ Simple clock, Coordinated Universal Time (UTC) with synchronization function by 
 ## Linux (Debian)
 1. Install QtCreator if it doesn't exist yet
 ```bash
-sudo apt-get install qtcreator qt5-default qtmultimedia5-dev
+sudo apt-get install qtcreator qt5-default qtmultimedia5-dev gdb
 ```
 2. Open the `UTime.pro` project file in QtCreator and configure the project.
 3. Build and Run the project

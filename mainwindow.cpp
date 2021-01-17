@@ -55,7 +55,7 @@ QMenu *submenu = new QMenu("Servers", this);
 		ui->lblSync->setText("*");
 		ui->lblSync->setStyleSheet("Color: red;");
 
-	return;
+	return; // !!! stop init
 	}
 //................................................................................................
     connect(ntp, SIGNAL(replyReceived(const QHostAddress, quint16, const NtpReply)), this, SLOT(NTPReplyReceived(const QHostAddress, quint16, const NtpReply)));
@@ -114,6 +114,9 @@ QActionGroup *group = new QActionGroup(this); // only one server can be selected
 //---------------------------------------------------------------------------------------------------------------
 MainWindow::~MainWindow()
 {
+	delete tmrMain; // to avoid segmentation fault errors on Timer event
+	delete tmrSync;
+
 	delete ui;
 }
 //--------------------------------------------------------------------------------------------------------------- ntp magic
@@ -307,6 +310,8 @@ void MainWindow::iconActivated(QSystemTrayIcon::ActivationReason reason)
 void MainWindow::closeAction()
 {
 	bForceClose =true;
+
+	delete trayIcon; // for Linux: The program will not be closed while there is a tray icon [Qt-BUG]
 	close();
 }
 //-------------------------------------------------------------------------------------- init file magic
@@ -390,9 +395,6 @@ QJsonObject settings(loadJsonFile(WorkFolder + "/settings.ini"));
 		QJsonObject pos =instance["Position"].toObject();
 		int x =pos["x"].toInt(), y =pos["y"].toInt();
 		QScreen *screen =QGuiApplication::primaryScreen();
-
-			qDebug("screen[%d, %d]", screen->geometry().width(), screen->geometry().height());
-			qDebug("app settings[%d, %d]", x, y);
 
 			if(x > 0 && x < screen->geometry().width() && y > 0 && y < screen->geometry().height())
 				move(x, y); // move window to last saved position
