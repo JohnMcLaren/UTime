@@ -11,7 +11,6 @@
 #include <QHostInfo>
 #include <QListWidget>
 #include <QTimer>
-#include <windows.h>
 #include <QDebug>
 #include "qntp/NtpClient.h"
 #include "qntp/NtpReply.h"
