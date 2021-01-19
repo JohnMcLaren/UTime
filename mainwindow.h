@@ -23,6 +23,7 @@
 #include <QDir>
 #include <QScreen>
 #include <QStandardPaths>
+#include <QProcessEnvironment>
 
 #include "beep.h"
 
