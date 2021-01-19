@@ -14,6 +14,21 @@ MainWindow::MainWindow(QWidget *parent) :
 	setWindowTitle(QString(APP_NAME) + " v" + APP_VERSION);
 	setWindowFlags(Qt::CustomizeWindowHint|Qt::WindowTitleHint|Qt::WindowCloseButtonHint|Qt::WindowSystemMenuHint|Qt::Dialog|Qt::MSWindowsFixedSizeDialogHint);
 	setFixedSize(size());
+
+	SETTINGS_PATH =QStandardPaths::writableLocation(QStandardPaths::AppConfigLocation);
+
+#if defined(Q_OS_LINUX)
+
+QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
+
+		if(env.value("SUDO_USER").isEmpty() && env.value("USER") != "root") // not su & not root
+			QMessageBox::warning(this, "Attention", "This program requires superuser privileges to work with the NTP port.");
+		else
+		if(!env.value("SUDO_USER").isEmpty()) // su but not root
+			WorkFolder.replace("/root", "/home/" + env.value("SUDO_USER"));
+		else // root
+			;
+#endif
 //.......................................................... tray icon init magic
 	trayIcon = new QSystemTrayIcon(this);
 	//trayIcon->setIcon(this->style()->standardIcon(QStyle::SP_ComputerIcon));
@@ -60,8 +75,8 @@ QMenu *submenu = new QMenu("Servers", this);
 //................................................................................................
     connect(ntp, SIGNAL(replyReceived(const QHostAddress, quint16, const NtpReply)), this, SLOT(NTPReplyReceived(const QHostAddress, quint16, const NtpReply)));
 //................................ Settings
-	if(!QDir(WorkFolder).exists())
-		QDir().mkdir(WorkFolder);
+	if(!QDir(SETTINGS_PATH).exists())
+		QDir().mkdir(SETTINGS_PATH);
 
 	if(!loadSettings())
 	{
@@ -319,7 +334,7 @@ void MainWindow::saveSettings()
 {
 QJsonObject settings;
 QJsonObject instance;
-QJsonArray instances =loadJsonFile(WorkFolder + "/settings.ini")["instances"].toArray();
+QJsonArray instances =loadJsonFile(SETTINGS_PATH + "/settings.ini")["instances"].toArray();
 
 // common settings ...........................
 	settings["servers"] =QJsonArray::fromStringList(Servers);
@@ -346,15 +361,15 @@ qint64 qiTimerValue;
 	if(!iCurrentServer && !qiTimerValue) // don't save default settings
 		return;
 
-	saveJsonFile(WorkFolder + "/settings.ini", QJsonDocument(settings));
+	saveJsonFile(SETTINGS_PATH + "/settings.ini", QJsonDocument(settings));
 }
 //............................................................
 bool MainWindow::loadSettings()
 {
-	if(!QDir(WorkFolder).exists())
+	if(!QDir(SETTINGS_PATH).exists())
 		return(false);
 
-QJsonObject settings(loadJsonFile(WorkFolder + "/settings.ini"));
+QJsonObject settings(loadJsonFile(SETTINGS_PATH + "/settings.ini"));
 
 	if(!settings.isEmpty())
 	{
@@ -402,7 +417,7 @@ QJsonObject settings(loadJsonFile(WorkFolder + "/settings.ini"));
 
 // new settings state
 		settings["instances"] =instances;
-		saveJsonFile(WorkFolder + "/settings.ini", QJsonDocument(settings));
+		saveJsonFile(SETTINGS_PATH + "/settings.ini", QJsonDocument(settings));
 
 		if(iCurrentServer < Servers.size())
 			return(true);

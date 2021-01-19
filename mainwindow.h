@@ -22,6 +22,7 @@
 #include <QJsonArray>
 #include <QDir>
 #include <QScreen>
+#include <QStandardPaths>
 
 #include "beep.h"
 
@@ -40,7 +41,7 @@ public:
 private:
 	Ui::MainWindow *ui;
 	QSystemTrayIcon *trayIcon;
-	const QString WorkFolder =QDir::homePath() + "/Documents/UTime";
+	QString SETTINGS_PATH; // CONSTANT
 
 	NtpClient	*ntp =nullptr;
 	QTimer      *tmrMain =nullptr; // seconds count
