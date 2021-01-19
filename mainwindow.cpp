@@ -25,7 +25,7 @@ QProcessEnvironment env = QProcessEnvironment::systemEnvironment();
 			QMessageBox::warning(this, "Attention", "This program requires superuser privileges to work with the NTP port.");
 		else
 		if(!env.value("SUDO_USER").isEmpty()) // su but not root
-			WorkFolder.replace("/root", "/home/" + env.value("SUDO_USER"));
+			SETTINGS_PATH.replace("/root", "/home/" + env.value("SUDO_USER"));
 		else // root
 			;
 #endif
