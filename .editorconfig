@@ -1,4 +1,4 @@
 # For correct sources indentation on GitHub [worked]
-[*.{c,cpp,h,md}]
+[*.{c,cpp,h}]
 indent_style = tab
 indent_size = 4
