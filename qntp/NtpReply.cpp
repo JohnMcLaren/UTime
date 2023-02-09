@@ -1,4 +1,5 @@
-/* This file is part of QNtp, a library that implements NTP protocol.
+/*
+ * This file is part of QNtp, a library that implements NTP protocol.
  *
  * Copyright (C) 2011 Alexander Fokin <apfokin@gmail.com>
  *
@@ -14,6 +15,7 @@
  *
  * You should have received a copy of the GNU Lesser General Public
  * License along with QNtp. If not, see <http://www.gnu.org/licenses/>. */
+
 #include "NtpReply.h"
 #include <cmath> /* For std::pow. */
 #include "NtpReply_p.h"
