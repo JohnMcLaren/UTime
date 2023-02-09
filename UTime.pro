@@ -41,3 +41,16 @@ RESOURCES += \
 DISTFILES += \
     License.txt
 
+# Set build out directory
+CONFIG(debug, debug|release) {
+    DESTDIR = debug
+} else {
+    DESTDIR = release
+}
+# For objects
+OBJECTS_DIR = $$DESTDIR/.obj
+# For MOC
+MOC_DIR = $$DESTDIR/.moc/
+
+
+

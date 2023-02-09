@@ -114,7 +114,7 @@ QActionGroup *group = new QActionGroup(this); // only one server can be selected
 		if(c == iCurrentServer)
 			action->setChecked(true);
 
-		connect(action, &QAction::triggered, [this, c]() { // menu index action handler
+		connect(action, &QAction::triggered, [this, c]() { // menu index action lambda handler
 			iCurrentServer =c;
 		});
 	}
@@ -301,7 +301,7 @@ bool MainWindow::eventFilter(QObject *object, QEvent *event)
 
 return(QObject::eventFilter(object, event));
 }
-//---------------------------------------------------------------------------------------------------- tray magic
+//--------------------------------------------------------------------------------------------------- tray magic
 void MainWindow::closeEvent(QCloseEvent *event)
 {
 	if(this->isVisible() && !bForceClose)
